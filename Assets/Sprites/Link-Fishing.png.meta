@@ -1,26 +1,57 @@
 fileFormatVersion: 2
 guid: e5589572e97abe04ba1364ee80ed6c3f
-timeCreated: 1505333101
-licenseType: Free
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: Link-Fishing_0
-    21300002: Link-Fishing_1
-    21300004: Link-Fishing_2
-    21300006: Link-Fishing_3
-    21300008: Link-Fishing_4
-    21300010: Link-Fishing_5
-    21300012: Link-Fishing_6
-    21300014: Link-Fishing_7
-    21300016: Link-Fishing_8
-    21300018: Link-Fishing_9
-    21300020: Link-Fishing_10
-    21300022: Link-Fishing_11
-    21300024: Link-Fishing_12
-    21300026: Link-Fishing_13
-    21300028: Link-Fishing_14
-    21300030: Link-Fishing_15
-  serializedVersion: 4
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: Link-Fishing_0
+  - first:
+      213: 21300002
+    second: Link-Fishing_1
+  - first:
+      213: 21300004
+    second: Link-Fishing_2
+  - first:
+      213: 21300006
+    second: Link-Fishing_3
+  - first:
+      213: 21300008
+    second: Link-Fishing_4
+  - first:
+      213: 21300010
+    second: Link-Fishing_5
+  - first:
+      213: 21300012
+    second: Link-Fishing_6
+  - first:
+      213: 21300014
+    second: Link-Fishing_7
+  - first:
+      213: 21300016
+    second: Link-Fishing_8
+  - first:
+      213: 21300018
+    second: Link-Fishing_9
+  - first:
+      213: 21300020
+    second: Link-Fishing_10
+  - first:
+      213: 21300022
+    second: Link-Fishing_11
+  - first:
+      213: 21300024
+    second: Link-Fishing_12
+  - first:
+      213: 21300026
+    second: Link-Fishing_13
+  - first:
+      213: 21300028
+    second: Link-Fishing_14
+  - first:
+      213: 21300030
+    second: Link-Fishing_15
+  externalObjects: {}
+  serializedVersion: 10
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -38,6 +69,8 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
   isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -48,53 +81,64 @@ TextureImporter:
     serializedVersion: 2
     filterMode: -1
     aniso: -1
-    mipBias: -1
+    mipBias: -100
     wrapU: 1
     wrapV: 1
     wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
+  singleChannelComponent: 0
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
   platformSettings:
-  - buildTarget: DefaultTexturePlatform
+  - serializedVersion: 2
+    buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Standalone
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: Standalone
     maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: WebGL
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: WebGL
     maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -112,6 +156,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: c9cee1b74c0e55c4d9b71acf98091443
+      internalID: 21300000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_1
       rect:
@@ -126,6 +177,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 2292798ab9e2fcf47b2263e8902a1e56
+      internalID: 21300002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_2
       rect:
@@ -140,6 +198,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: f98e24619073059408e87b695cdd0066
+      internalID: 21300004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_3
       rect:
@@ -154,6 +219,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 1e77060f18ca5684782af3d8a11bdfbf
+      internalID: 21300006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_4
       rect:
@@ -168,6 +240,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 7665dd113f5e8a84b883f89e1f7b4ab4
+      internalID: 21300008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_5
       rect:
@@ -182,6 +261,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 304a33b1a61fc744692c348dda01a45f
+      internalID: 21300010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_6
       rect:
@@ -196,6 +282,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: e6da5b1ec591ce0459fc9dd753e241fd
+      internalID: 21300012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_7
       rect:
@@ -210,6 +303,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 534a767a1bf230d47a84622b69e65a68
+      internalID: 21300014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_8
       rect:
@@ -224,6 +324,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 76530dd5d58b17048a7858fa942b2d2d
+      internalID: 21300016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_9
       rect:
@@ -238,6 +345,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 9df62d604e31b9344b5889d37da7f1fd
+      internalID: 21300018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_10
       rect:
@@ -252,6 +366,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: cd46fe08600d9114aab235f2186dd49b
+      internalID: 21300020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_11
       rect:
@@ -266,6 +387,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 57ed7f3b987ca9a4190b4ef9556fee6d
+      internalID: 21300022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_12
       rect:
@@ -280,6 +408,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 9ab86ec41ee40d040a605159d3ce8caf
+      internalID: 21300024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_13
       rect:
@@ -294,6 +429,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 6617d00b7835efe45b28f0e30efe1c7a
+      internalID: 21300026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_14
       rect:
@@ -308,6 +450,13 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 3c6fde6920003e24c99d4066159d00b0
+      internalID: 21300028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Link-Fishing_15
       rect:
@@ -322,9 +471,26 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 0eeb0f926e2505540b43053720321c83
+      internalID: 21300030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
   spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
