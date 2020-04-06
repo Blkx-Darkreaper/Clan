@@ -7,7 +7,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     protected float moveSpeed = 5;
 
+    //protected Vector2 direction;
+    protected const string DIRECTION = "Direction";
+
     protected Vector2 movement;
+    protected const string MOVEMENT = "Movement";
+    protected const string SPEED = "Speed";
 
     protected Rigidbody2D rigidBody;
     protected Animator animator;
@@ -16,12 +21,6 @@ public class PlayerMovement : MonoBehaviour
     {
         public const string HORIZONTAL = "Horizontal";
         public const string VERTICAL = "Vertical";
-    }
-
-    protected const string MOVEMENT = "Movement";
-    protected struct Movement
-    {
-        public const string SPEED = "Speed";
     }
 
     void Awake()
@@ -38,7 +37,17 @@ public class PlayerMovement : MonoBehaviour
 
         animator.SetFloat($"{MOVEMENT}{Axis.HORIZONTAL}", movement.x);
         animator.SetFloat($"{MOVEMENT}{Axis.VERTICAL}", movement.y);
-        animator.SetFloat($"{MOVEMENT}{Movement.SPEED}", movement.sqrMagnitude);
+        animator.SetFloat($"{MOVEMENT}{SPEED}", movement.sqrMagnitude);
+
+        if(movement.x == 0 && movement.y == 0)
+        {
+            return;
+        }
+
+        //direction.x = movement.x;
+        //direction.y = movement.y;
+        animator.SetFloat($"{DIRECTION}{Axis.HORIZONTAL}", movement.x);
+        animator.SetFloat($"{DIRECTION}{Axis.VERTICAL}", movement.y);
     }
 
     void FixedUpdate()
