@@ -374,11 +374,19 @@ public class PlayerFishing : MonoBehaviour
         LureMovement lureMovement = lureRigidBody.gameObject.GetComponent<LureMovement>();
         lureMovement.LureStopped += Angling;
 
-        // Set fishing line starting position
-        fishingLine.startPosition = rodTipRigidBody.position;
-        fishingLine.endPosition = lureRigidBody.position;
+        // Get lure's hinge joint
+        HingeJoint2D lureHinge = lureRigidBody.gameObject.GetComponent<HingeJoint2D>();
+        if(lureHinge == null)
+        {
+            return;
+        }
 
+        // Initialize fishing line
         fishingLine.gameObject.SetActive(true);
+        fishingLine.Init();
+
+        // Attach fishing line to lure
+        lureHinge.connectedBody = fishingLine.LastLink;
     }
 
     protected void SpoolOutLine()
@@ -388,31 +396,31 @@ public class PlayerFishing : MonoBehaviour
             return;
         }
 
-        // Update end position
-        fishingLine.endPosition = lureRigidBody.position;
+        //// Update end position
+        //fishingLine.endPosition = lureRigidBody.position;
 
-        // Update segments
-        this.lineOut = Vector2.Distance(lureRigidBody.position, rodTipRigidBody.position);
+        //// Update segments
+        //this.lineOut = Vector2.Distance(lureRigidBody.position, rodTipRigidBody.position);
 
-        int currentSegments = fishingLine.segmentCount;
-        int expectedSegments = (int)(lineOut / fishingLine.RopeSegmentLength);
+        //int currentSegments = fishingLine.linkCount;
+        //int expectedSegments = (int)(lineOut / fishingLine.RopeSegmentLength);
 
-        int diff = currentSegments - expectedSegments;
-        int absDiff = Math.Abs(diff);
-        for (int i = 0; i < absDiff; i++)
-        {
-            if (diff < 0)
-            {
-                Rope.Sign horizontalDirection = (Rope.Sign)playerMovement.FacingDirection.x;
-                Rope.Sign verticalDirection = (Rope.Sign)playerMovement.FacingDirection.y;
+        //int diff = currentSegments - expectedSegments;
+        //int absDiff = Math.Abs(diff);
+        //for (int i = 0; i < absDiff; i++)
+        //{
+        //    if (diff < 0)
+        //    {
+        //        Rope.Sign horizontalDirection = (Rope.Sign)playerMovement.FacingDirection.x;
+        //        Rope.Sign verticalDirection = (Rope.Sign)playerMovement.FacingDirection.y;
 
-                fishingLine.AddSegmentToStart(horizontalDirection, verticalDirection);
-            }
-            else
-            {
-                fishingLine.RemoveSegmentFromStart();
-            }
-        }
+        //        fishingLine.AddSegmentToStart(horizontalDirection, verticalDirection);
+        //    }
+        //    else
+        //    {
+        //        fishingLine.RemoveSegmentFromStart();
+        //    }
+        //}
     }
 
     protected void SampleCast(Vector2 casting)
