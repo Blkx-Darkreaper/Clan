@@ -366,13 +366,13 @@ public class PlayerFishing : MonoBehaviour
 
         lureRigidBody.gameObject.SetActive(true);
 
-        // Accelerate lure
-        Vector2 castDirection = new Vector2(rodMovement.x * castingSpeed, rodMovement.y + castingLiftSpeed);
-        Vector2 lureVelocity = castDirection * Time.fixedDeltaTime;
-        lureRigidBody.velocity = lureVelocity;
+        //// Accelerate lure
+        //Vector2 castDirection = new Vector2(rodMovement.x * castingSpeed, rodMovement.y + castingLiftSpeed);
+        //Vector2 lureVelocity = castDirection * Time.fixedDeltaTime;
+        //lureRigidBody.velocity = lureVelocity;
 
-        LureMovement lureMovement = lureRigidBody.gameObject.GetComponent<LureMovement>();
-        lureMovement.LureStopped += Angling;
+        //LureMovement lureMovement = lureRigidBody.gameObject.GetComponent<LureMovement>();
+        //lureMovement.LureStopped += Angling;
 
         // Get lure's hinge joint
         HingeJoint2D lureHinge = lureRigidBody.gameObject.GetComponent<HingeJoint2D>();
