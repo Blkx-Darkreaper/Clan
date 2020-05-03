@@ -2,6 +2,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(LineRenderer))]
 public class Rope : MonoBehaviour
 {
     public Rigidbody2D FirstLink { get { return allLinks.Count > 0 ? allLinks.First.Value : null; } }
@@ -13,11 +14,12 @@ public class Rope : MonoBehaviour
     protected int linkCount = 7;
     protected LinkedList<Rigidbody2D> allLinks;
     protected Rigidbody2D hook;
+    protected LineRenderer lineRenderer;
 
     void Awake()
     {
         this.hook = GetComponent<Rigidbody2D>();
-
+        this.lineRenderer = GetComponent<LineRenderer>();
         this.allLinks = new LinkedList<Rigidbody2D>();
     }
 
@@ -60,5 +62,25 @@ public class Rope : MonoBehaviour
 
             previousLink = rigidBody;
         }
+    }
+
+    void Update()
+    {
+        Draw();
+    }
+
+    protected void Draw()
+    {
+        Vector3[] allPoints = new Vector3[this.allLinks.Count];
+
+        int i = 0;
+        foreach (Rigidbody2D link in allLinks)
+        {
+            allPoints[i] = link.transform.position;
+            i++;
+        }
+
+        lineRenderer.positionCount = allLinks.Count;
+        lineRenderer.SetPositions(allPoints);
     }
 }
