@@ -151,10 +151,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 1
+  m_Mass: 2
+  m_LinearDrag: 0.2
   m_AngularDrag: 0.05
-  m_GravityScale: 0.1
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -237,7 +237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravityScale: 0.1
   fallSpeed: 1
-  fallDuration: 2
+  fallDuration: 1
   fallEndTime: 0
   isFalling: 0
 --- !u!1 &519420028
