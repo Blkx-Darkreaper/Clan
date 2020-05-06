@@ -4,7 +4,8 @@
 public class Rope : MonoBehaviour
 {
     public int numPoints = 10;
-    public float curvature = 0;
+    public float slack = 0;
+    public float limitSlope = 10;
 
     public Rigidbody2D rodTip;
     public Rigidbody2D lure;
@@ -24,14 +25,9 @@ public class Rope : MonoBehaviour
         UpdateControlPoint();
     }
 
-    void OnDrawGizmos()
-    {
-        UpdateControlPoint();
-    }
-
     public void UpdateControlPoint()
     {
-        if(curvature == 0f)
+        if(slack <= 0)
         {
             this.controlPoint = Vector2.zero;
             return;
@@ -53,32 +49,21 @@ public class Rope : MonoBehaviour
         float d = Mathf.Cos(oppositeAngle) * quarterHypotenuse;
 
         Vector2 cornerPoint = new Vector2(rodTip.position.x, lure.position.y);
-        Vector2 intersectPoint = new Vector2(rodTip.position.x + d, lure.position.y + d);
-        
-        Vector2 doubleCornerPoint = 2 * cornerPoint - intersectPoint;
-        if(curvature == 1)
-        {
-            this.controlPoint = doubleCornerPoint;
-            return;
-        }
+        //Vector2 intersectPoint = new Vector2(rodTip.position.x + d, lure.position.y + d);
+        Vector2 intersectPoint = new Vector2(cornerPoint.x + 0.25f * deltaX, cornerPoint.y + 0.75f * deltaY);
 
-        //if(curvature == 0f)
-        //{
-        //    this.controlPoint = intersectPoint;
-        //    return;
-        //}
+        float a = rodTip.position.x;
+        float b = intersectPoint.y + limitSlope / (intersectPoint.x - a);
 
-        //float segmentLength = Mathf.Sqrt(xSquared + ySquared);
-        //float distanceFromIntersect = segmentLength * curvature;
-        //float offsetX = Mathf.Cos(quarterPi) * distanceFromIntersect;
-        //float offsetY = Mathf.Sin(quarterPi) * distanceFromIntersect;
+        float controlY = intersectPoint.y - slack;
+        float controlX = -limitSlope / (controlY - b) + a;
 
-        //this.controlPoint = new Vector2(x - offsetX, y + offsetY);
-        this.controlPoint = CalculateLinearBezierPoint(curvature, intersectPoint, doubleCornerPoint);
+        this.controlPoint = new Vector2(controlX, controlY);
     }
 
     void Update()
     {
+        UpdateControlPoint();   //testing
         Draw();
     }
 
@@ -91,7 +76,7 @@ public class Rope : MonoBehaviour
             float t = i / (float)numPoints;
             Vector3 bezierPoint = CalculateLinearBezierPoint(t, rodTip.position, lure.position);
 
-            if (curvature > 0)
+            if (slack > 0)
             {
                 bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, controlPoint, lure.position);
             }
