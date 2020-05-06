@@ -1,124 +1,81 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
 public class Rope : MonoBehaviour
 {
-    public Vector2 startPosition;
-    public Vector2 endPosition;
+    public int numPoints = 10;
+    public float curvature = 0;
 
-    public float RopeSegmentLength { get { return ropeSegmentLength; } }
+    public Rigidbody2D rodTip;
+    public Rigidbody2D lure;
 
-    [SerializeField]
-    protected float ropeSegmentLength = 0.25f;
-    [SerializeField]
-    protected float lineWidth = 0.1f;
-    [SerializeField]
-    protected Vector2 g = new Vector2(0f, -1f);
-    [SerializeField]
-    protected int totalConstraintIterations = 50;
-
-    [ReadOnlyInInspector]
-    public int segmentCount = 0;
+    protected Vector2 controlPoint;
 
     protected LineRenderer lineRenderer;
-    protected LinkedList<RopeSegment> allRopeSegments = new LinkedList<RopeSegment>();
-    private readonly float oneOverRootTwo = 1 / Mathf.Sqrt(2f);
+    protected readonly float quarterPi = 0.25f * Mathf.PI;
 
     void Awake()
     {
         this.lineRenderer = this.GetComponent<LineRenderer>();
     }
 
-    void Start()
+    void OnEnable()
     {
-        Init();
+        UpdateControlPoint();
     }
 
-    protected void Init()
+    void OnDrawGizmos()
     {
-        this.allRopeSegments.AddLast(new RopeSegment(startPosition));
-
-        lineRenderer.startWidth = lineWidth;
-        lineRenderer.endWidth = lineWidth;
+        UpdateControlPoint();
     }
 
-    #region ModifySegments
-    public void AddSegmentToStart(Sign horizontalDirection, Sign verticalDirection)
+    public void UpdateControlPoint()
     {
-        if(allRopeSegments.Count == 0)
+        if(curvature == 0f)
         {
-            Init();
+            this.controlPoint = Vector2.zero;
+            return;
         }
 
-        Vector2 firstPosition = allRopeSegments.First.Value.currentPosition;
+        //if (curvature == 1f)
+        //{
+        //    this.controlPoint = cornerPoint;
+        //    return;
+        //}
 
-        if (verticalDirection.Equals(Sign.zero) == true)
+        Vector2 delta = lure.position - rodTip.position;
+        float deltaX = Mathf.Abs(delta.x);
+        float deltaY = Mathf.Abs(delta.y);
+
+        float oppositeAngle = Mathf.Atan(deltaY/deltaX);
+        float quarterHypotenuse = 0.25f * Mathf.Sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        float d = Mathf.Cos(oppositeAngle) * quarterHypotenuse;
+
+        Vector2 cornerPoint = new Vector2(rodTip.position.x, lure.position.y);
+        Vector2 intersectPoint = new Vector2(rodTip.position.x + d, lure.position.y + d);
+        
+        Vector2 doubleCornerPoint = 2 * cornerPoint - intersectPoint;
+        if(curvature == 1)
         {
-            firstPosition.x += ropeSegmentLength * (int)horizontalDirection;
+            this.controlPoint = doubleCornerPoint;
+            return;
         }
 
-        if (horizontalDirection.Equals(Sign.zero) == true)
-        {
-            firstPosition.y += ropeSegmentLength * (int)verticalDirection;
-        }
+        //if(curvature == 0f)
+        //{
+        //    this.controlPoint = intersectPoint;
+        //    return;
+        //}
 
-        if (verticalDirection.Equals(Sign.zero) != true && horizontalDirection.Equals(Sign.zero) != true)
-        {
-            firstPosition.x += oneOverRootTwo * ropeSegmentLength * (int)horizontalDirection;
-            firstPosition.y += oneOverRootTwo * ropeSegmentLength * (int)verticalDirection;
-        }
+        //float segmentLength = Mathf.Sqrt(xSquared + ySquared);
+        //float distanceFromIntersect = segmentLength * curvature;
+        //float offsetX = Mathf.Cos(quarterPi) * distanceFromIntersect;
+        //float offsetY = Mathf.Sin(quarterPi) * distanceFromIntersect;
 
-        RopeSegment ropeSegment = new RopeSegment(firstPosition);
-        this.allRopeSegments.AddFirst(ropeSegment);
-
-        this.segmentCount = allRopeSegments.Count;
+        //this.controlPoint = new Vector2(x - offsetX, y + offsetY);
+        this.controlPoint = CalculateLinearBezierPoint(curvature, intersectPoint, doubleCornerPoint);
     }
-
-    public void RemoveSegmentFromStart()
-    {
-        RopeSegment secondSegment = allRopeSegments.First.Next.Value;
-
-        allRopeSegments.RemoveFirst();
-
-        this.segmentCount = allRopeSegments.Count;
-    }
-
-    public void AddSegmentToEnd(Sign horizontal, Sign vertical)
-    {
-        Vector2 lastPosition = allRopeSegments.Last.Value.currentPosition;
-
-        if (vertical.Equals(Sign.zero) == true)
-        {
-            lastPosition.x += ropeSegmentLength * (int)horizontal;
-        }
-
-        if (horizontal.Equals(Sign.zero) == true)
-        {
-            lastPosition.y += ropeSegmentLength * (int)vertical;
-        }
-
-        if (vertical.Equals(Sign.zero) != true && horizontal.Equals(Sign.zero) != true)
-        {
-            lastPosition.x += oneOverRootTwo * ropeSegmentLength * (int)horizontal;
-            lastPosition.y += oneOverRootTwo * ropeSegmentLength * (int)vertical;
-        }
-
-        RopeSegment ropeSegment = new RopeSegment(lastPosition);
-        this.allRopeSegments.AddLast(ropeSegment);
-
-        this.segmentCount = allRopeSegments.Count;
-    }
-
-    public void RemoveSegmentFromEnd()
-    {
-        RopeSegment secondLastSegment = allRopeSegments.Last.Previous.Value;
-
-        allRopeSegments.RemoveLast();
-
-        this.segmentCount = allRopeSegments.Count;
-    }
-    #endregion
 
     void Update()
     {
@@ -128,118 +85,38 @@ public class Rope : MonoBehaviour
     #region Update
     protected void Draw()
     {
-        Vector3[] allRopePositions = new Vector3[this.allRopeSegments.Count];
-
-        int i = 0;
-        foreach (RopeSegment ropeSegment in allRopeSegments)
+        Vector3[] allPoints = new Vector3[numPoints];
+        for (int i = 0; i < numPoints; i++)
         {
-            allRopePositions[i] = ropeSegment.currentPosition;
-            i++;
+            float t = i / (float)numPoints;
+            Vector3 bezierPoint = CalculateLinearBezierPoint(t, rodTip.position, lure.position);
+
+            if (curvature > 0)
+            {
+                bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, controlPoint, lure.position);
+            }
+
+            allPoints[i] = bezierPoint;
         }
 
-        lineRenderer.positionCount = allRopeSegments.Count;
-        lineRenderer.SetPositions(allRopePositions);
+        lineRenderer.positionCount = numPoints;
+        lineRenderer.SetPositions(allPoints);
+    }
+
+    protected Vector3 CalculateLinearBezierPoint(float t, Vector3 p0, Vector3 p1)
+    {
+        // B(t) = P0 + t(P1 – P0) = (1-t) P0 + tP1 , 0 < t < 1
+        float u = 1 - t;
+        Vector3 bezierPoint = u * p0 + t * p1;
+        return bezierPoint;
+    }
+
+    protected Vector3 CalculateQuadraticBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)
+    {
+        // B(t) = (1-t)^2P0 + 2(1-t)tP1 + t^2P2 , 0 < t < 1
+        float u = 1 - t;
+        Vector3 bezierPoint = Mathf.Pow(u, 2)*p0 + 2*u*t*p1 + Mathf.Pow(t, 2)*p2;
+        return bezierPoint;
     }
     #endregion
-
-    void FixedUpdate()
-    {
-        //Simulate();
-    }
-
-    #region FixedUpdate
-    protected void Simulate()
-    {
-        // Simulation
-        foreach (RopeSegment ropeSegment in allRopeSegments)
-        {
-            Vector2 velocity = ropeSegment.currentPosition - ropeSegment.previousPosition;
-
-            ropeSegment.previousPosition = ropeSegment.currentPosition;
-            ropeSegment.currentPosition += velocity;
-
-            Vector2 gravity = g * Time.deltaTime;
-            ropeSegment.currentPosition += gravity;
-        }
-
-        // Constraints
-        for (int i = 0; i < totalConstraintIterations; i++)
-        {
-            ApplyConstraints();
-        }
-    }
-
-    protected void ApplyConstraints()
-    {
-        LinkedListNode<RopeSegment> currentNode = this.allRopeSegments.First;
-
-        // Make sure both end points are fixed
-        RopeSegment firstSegment = currentNode.Value;
-        firstSegment.currentPosition = startPosition;
-
-        RopeSegment lastSegment = this.allRopeSegments.Last.Value;
-        lastSegment.currentPosition = endPosition;
-
-        if (allRopeSegments.Count < 3)
-        {
-            return;
-        }
-
-        // Maintain distance between points
-        while (currentNode.Next != null)
-        {
-            RopeSegment currentSegment = currentNode.Value;
-            RopeSegment nextSegment = currentNode.Next.Value;
-
-            Vector2 delta = currentSegment.currentPosition - nextSegment.currentPosition;
-
-            float distance = delta.magnitude;
-            float error = Mathf.Abs(distance - ropeSegmentLength);
-
-            Vector2 changeDirection = Vector2.zero;
-
-            if (distance > ropeSegmentLength)
-            {
-                changeDirection = delta.normalized;
-            }
-
-            if (distance < ropeSegmentLength)
-            {
-                changeDirection = (nextSegment.currentPosition - currentSegment.currentPosition).normalized;
-            }
-
-            Vector2 changeAmount = changeDirection * error;
-
-            if (currentSegment.Equals(firstSegment) == true && nextSegment.Equals(lastSegment) != true)
-            {
-                nextSegment.currentPosition += changeAmount;
-            }
-
-            if (currentSegment.Equals(firstSegment) != true && nextSegment.Equals(lastSegment) != true)
-            {
-                currentSegment.currentPosition -= changeAmount * error;
-                nextSegment.currentPosition += changeAmount * 0.5f;
-            }
-
-            if (currentSegment.Equals(firstSegment) != true && nextSegment.Equals(lastSegment) == true)
-            {
-                firstSegment.currentPosition += changeAmount;
-            }
-        }
-    }
-    #endregion
-
-    public enum Sign { positive = 1, zero = 0, negative = -1 }
-
-    public class RopeSegment
-    {
-        public Vector2 currentPosition;
-        public Vector2 previousPosition;
-
-        public RopeSegment(Vector2 position)
-        {
-            this.currentPosition = position;
-            this.previousPosition = position;
-        }
-    }
 }
