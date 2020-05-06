@@ -4074,7 +4074,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numPoints: 10
-  curvature: 0.1
+  slack: 1
+  limitSlope: 10
   rodTip: {fileID: 1726442060}
   lure: {fileID: 1718027681}
 --- !u!120 &1726442062
@@ -4232,7 +4233,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numPoints: 10
-  curvature: 0
+  slack: 0
+  limitSlope: 10
   rodTip: {fileID: 1869138612}
   lure: {fileID: 228700315}
 --- !u!120 &1772696577

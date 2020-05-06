@@ -373,7 +373,7 @@ public class PlayerFishing : MonoBehaviour
         lureMovement.LureStopped += Angling;
 
         // Set fishing line starting position
-        fishingLine.curvature = 1;
+        fishingLine.slack = 1;
         //fishingLine.UpdateControlPoint();
 
         fishingLine.gameObject.SetActive(true);
