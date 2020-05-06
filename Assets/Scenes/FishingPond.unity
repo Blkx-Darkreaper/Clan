@@ -4039,7 +4039,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!50 &1726442060
 Rigidbody2D:
   serializedVersion: 4
@@ -4073,11 +4073,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b0b448d1bc4d5e4583d3d88f4ba0bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numPoints: 10
   slack: 1
-  limitSlope: 10
   rodTip: {fileID: 1726442060}
   lure: {fileID: 1718027681}
+  lineWidth: 0.1
+  numPoints: 10
+  limitSlope: 10
+  maxStrain: 0
 --- !u!120 &1726442062
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -4232,11 +4234,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b0b448d1bc4d5e4583d3d88f4ba0bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numPoints: 10
   slack: 0
-  limitSlope: 10
   rodTip: {fileID: 1869138612}
   lure: {fileID: 228700315}
+  lineWidth: 0.05
+  numPoints: 10
+  limitSlope: 10
+  maxStrain: 0
 --- !u!120 &1772696577
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -4279,7 +4283,7 @@ LineRenderer:
   - {x: 2, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.05
+    widthMultiplier: 0.1
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -4500,22 +4504,19 @@ MonoBehaviour:
   castingRightLureOffset: {x: 0.4, y: -0.1}
   currentRodTipPosition: {x: 0, y: 0}
   previousRodTipPosition: {x: 0, y: 0}
-  lineOut: 0
   isAngling: 0
-  currentReelRotationSpeed: 0
+  currentReelRotationVelocity: 0
   previousReelRotationSpeed: 0
   reelIn: 0
   reelOut: 0
-  lineLength: 0
-  maxStrain: 0
-  reelingSpeed: 0
-  reelingStrength: 0
+  lineOut: 0
+  lineLength: 25
+  reelingSpeed: 0.05
+  reelDrag: 0.1
+  reelingStrength: 1
   hasBite: 0
   hookBite: 0
   fish: {fileID: 0}
-  lineTension: 0
-  lineSlack: 0
-  lineStrain: 0
 --- !u!1 &1869138610
 GameObject:
   m_ObjectHideFlags: 0

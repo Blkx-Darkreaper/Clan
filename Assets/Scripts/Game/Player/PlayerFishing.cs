@@ -47,27 +47,27 @@ public class PlayerFishing : MonoBehaviour
     public Vector2 currentRodTipPosition;
     [ReadOnlyInInspector]
     public Vector2 previousRodTipPosition;
-    [ReadOnlyInInspector]
-    public float lineOut;
 
     [ReadOnlyInInspector]
     public bool isAngling = false;
     [ReadOnlyInInspector]
-    public float currentReelRotationSpeed = 0;  // + out, - in
+    public float currentReelRotationVelocity = 0;  // + out, - in
     [ReadOnlyInInspector]
     public float previousReelRotationSpeed = 0;
     [ReadOnlyInInspector]
     public float reelIn;
     [ReadOnlyInInspector]
     public float reelOut;
+    [ReadOnlyInInspector]
+    public float lineOut;
     [SerializeField]
-    protected float lineLength;
+    protected float lineLength = 25;
     [SerializeField]
-    protected float maxStrain;
+    protected float reelingSpeed = 1;
     [SerializeField]
-    protected float reelingSpeed;
+    protected float reelDrag = 0.1f;
     [SerializeField]
-    protected float reelingStrength;
+    protected float reelingStrength = 1;
 
     [ReadOnlyInInspector]
     public bool hasBite = false;
@@ -75,12 +75,6 @@ public class PlayerFishing : MonoBehaviour
     public float hookBite;
     [ReadOnlyInInspector]
     public FishMovement fish;
-    [ReadOnlyInInspector]
-    public float lineTension = 0;
-    [ReadOnlyInInspector]
-    public float lineSlack = 0;
-    [ReadOnlyInInspector]
-    public float lineStrain = 0;
 
     protected const string ROD = "Rod";
     protected const string MOVEMENT = "Movement";
@@ -264,12 +258,44 @@ public class PlayerFishing : MonoBehaviour
             SampleCast(rodMovement);
 
             ReleaseCast(rodPositionX);
-
-            //SpoolOutLine();
         }
         else
         {
-            //HandleReelingIn();
+            float lineTension = 0;
+
+            float lineSlack = fishingLine.slack;
+            if (lineSlack < 0)
+            {
+                lineTension = -lineSlack;
+            }
+
+            HandleReelingIn(lineTension);
+            HandleReelingOut(lineTension);
+
+            float deltaReel = reelIn + reelOut;
+
+            // Stop reel
+            if (2 - deltaReel < threshold)
+            {
+                this.currentReelRotationVelocity = 0;
+            }
+
+            // Slow reel
+            if(deltaReel < threshold)
+            {
+                float deltaReelVelocity = Mathf.Clamp(reelDrag, reelDrag, -currentReelRotationVelocity);
+                if(currentReelRotationVelocity > 0)
+                {
+                    deltaReelVelocity = Mathf.Clamp(-reelDrag, -currentReelRotationVelocity, -reelDrag);
+                }
+
+                this.currentReelRotationVelocity += deltaReelVelocity;
+            }
+
+            float delta = Mathf.Clamp(currentReelRotationVelocity * Time.fixedDeltaTime, -lineOut, lineLength - lineOut);
+            this.lineOut += delta;
+
+            this.fishingLine.UpdateSlack(delta);
 
             //MoveRod();
 
@@ -373,19 +399,10 @@ public class PlayerFishing : MonoBehaviour
         lureMovement.LureStopped += Angling;
 
         // Set fishing line starting position
-        fishingLine.slack = 1;
+        fishingLine.slack = 0;
         //fishingLine.UpdateControlPoint();
 
         fishingLine.gameObject.SetActive(true);
-    }
-
-    protected void SpoolOutLine()
-    {
-        if (hasReleasedCast != true)
-        {
-            return;
-        }
-
     }
 
     protected void SampleCast(Vector2 casting)
@@ -404,29 +421,36 @@ public class PlayerFishing : MonoBehaviour
         animator.SetBool(Trigger.IS_ANGLING, isAngling);
     }
 
-    protected void HandleReelingIn()
-    {
-        if (reelOut < reelIn)
-        {
-            return;
-        }
-
-        float reelRotationSpeed = currentReelRotationSpeed - previousReelRotationSpeed;
-
-        float reelInSpeed = (reelIn - reelOut) * reelingSpeed - Mathf.Clamp(lineTension - reelingStrength, 0, lineTension);
-
-        previousReelRotationSpeed = currentReelRotationSpeed;
-        currentReelRotationSpeed = reelRotationSpeed - reelInSpeed;
-    }
-
-    protected void HandleReelingOut()
+    protected void HandleReelingIn(float lineTension)
     {
         if (reelIn < reelOut)
         {
             return;
         }
 
-        // TODO
+        //float reelRotationSpeed = currentReelRotationSpeed - previousReelRotationSpeed;
+        
+        float reelInSpeed = (-reelIn + reelOut) * reelingSpeed - Mathf.Clamp(lineTension - reelingStrength, 0, lineTension);
+        currentReelRotationVelocity += reelInSpeed;
+
+        //previousReelRotationSpeed = currentReelRotationSpeed;
+        //currentReelRotationSpeed = reelRotationSpeed - reelInSpeed;
+    }
+
+    protected void HandleReelingOut(float lineTension)
+    {
+        if (reelOut < reelIn)
+        {
+            return;
+        }
+
+        //float reelRotationSpeed = currentReelRotationSpeed - previousReelRotationSpeed;
+
+        float reelOutSpeed = (reelOut - reelIn) * reelingSpeed + Mathf.Clamp(lineTension, 0, lineTension);
+        currentReelRotationVelocity += reelOutSpeed;
+
+        //previousReelRotationSpeed = currentReelRotationSpeed;
+        //currentReelRotationSpeed = reelRotationSpeed + reelOutSpeed;
     }
 
     protected void HandleTension()

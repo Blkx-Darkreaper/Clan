@@ -3,12 +3,21 @@
 [RequireComponent(typeof(LineRenderer))]
 public class Rope : MonoBehaviour
 {
-    public int numPoints = 10;
+    [ReadOnlyInInspector]
     public float slack = 0;
-    public float limitSlope = 10;
 
-    public Rigidbody2D rodTip;
-    public Rigidbody2D lure;
+    [SerializeField]
+    protected Rigidbody2D rodTip;
+    [SerializeField]
+    protected Rigidbody2D lure;
+    [SerializeField]
+    protected float lineWidth = 0.1f;
+    [SerializeField]
+    protected int numPoints = 10;
+    [SerializeField]
+    protected float limitSlope = 10;
+    [SerializeField]
+    protected float maxStrain;
 
     protected Vector2 controlPoint;
 
@@ -22,10 +31,20 @@ public class Rope : MonoBehaviour
 
     void OnEnable()
     {
+        this.lineRenderer.startWidth = lineWidth;
+        this.lineRenderer.endWidth = lineWidth;
+
         UpdateControlPoint();
     }
 
-    public void UpdateControlPoint()
+    public void UpdateSlack(float deltaSlack)
+    {
+        this.slack += deltaSlack;
+
+        UpdateControlPoint();
+    }
+
+    protected void UpdateControlPoint()
     {
         if(slack <= 0)
         {
@@ -63,7 +82,7 @@ public class Rope : MonoBehaviour
 
     void Update()
     {
-        UpdateControlPoint();   //testing
+        //UpdateControlPoint();   //testing
         Draw();
     }
 
