@@ -41,8 +41,6 @@ public class PlayerFishing : MonoBehaviour
     [SerializeField]
     protected float castingSpeed = 500f;
     [SerializeField]
-    protected float castingLiftSpeed = 3f;
-    [SerializeField]
     protected Vector2 castingRightLureOffset = new Vector2(0.4f, -0.1f);
 
     [ReadOnlyInInspector]
@@ -222,7 +220,7 @@ public class PlayerFishing : MonoBehaviour
 
     protected void ToggleFishing()   // A
     {
-        if(hasBite == true)
+        if (hasBite == true)
         {
             return;
         }
@@ -267,7 +265,7 @@ public class PlayerFishing : MonoBehaviour
 
             ReleaseCast(rodPositionX);
 
-            SpoolOutLine();
+            //SpoolOutLine();
         }
         else
         {
@@ -320,7 +318,7 @@ public class PlayerFishing : MonoBehaviour
         //{
         //    return;
         //}
-        if(isHolding == true)
+        if (isHolding == true)
         {
             return;
         }
@@ -341,19 +339,19 @@ public class PlayerFishing : MonoBehaviour
         {
             return;
         }
-        if(isHoldingLine == true)
+        if (isHoldingLine == true)
         {
             return;
         }
-        if(rodPositionX < threshold)
+        if (rodPositionX < threshold)
         {
             return;
         }
-        if(rodMovement.x < 0)
+        if (rodMovement.x < 0)
         {
             return;
         }
-        if(hasReleasedCast == true)
+        if (hasReleasedCast == true)
         {
             return;
         }
@@ -367,52 +365,27 @@ public class PlayerFishing : MonoBehaviour
         lureRigidBody.gameObject.SetActive(true);
 
         // Accelerate lure
-        Vector2 castDirection = new Vector2(rodMovement.x * castingSpeed, rodMovement.y + castingLiftSpeed);
-        Vector2 lureVelocity = castDirection * Time.fixedDeltaTime;
+        Vector2 castDirection = new Vector2(rodMovement.x * castingSpeed, rodMovement.y + 0.25f * castingSpeed);
+        Vector2 lureVelocity = castDirection;
         lureRigidBody.velocity = lureVelocity;
 
         LureMovement lureMovement = lureRigidBody.gameObject.GetComponent<LureMovement>();
         lureMovement.LureStopped += Angling;
 
         // Set fishing line starting position
-        fishingLine.startPosition = rodTipRigidBody.position;
-        fishingLine.endPosition = lureRigidBody.position;
+        fishingLine.curvature = 1;
+        //fishingLine.UpdateControlPoint();
 
         fishingLine.gameObject.SetActive(true);
     }
 
     protected void SpoolOutLine()
     {
-        if(hasReleasedCast != true)
+        if (hasReleasedCast != true)
         {
             return;
         }
 
-        // Update end position
-        fishingLine.endPosition = lureRigidBody.position;
-
-        // Update segments
-        this.lineOut = Vector2.Distance(lureRigidBody.position, rodTipRigidBody.position);
-
-        int currentSegments = fishingLine.segmentCount;
-        int expectedSegments = (int)(lineOut / fishingLine.RopeSegmentLength);
-
-        int diff = currentSegments - expectedSegments;
-        int absDiff = Math.Abs(diff);
-        for (int i = 0; i < absDiff; i++)
-        {
-            if (diff < 0)
-            {
-                Rope.Sign horizontalDirection = (Rope.Sign)playerMovement.FacingDirection.x;
-                Rope.Sign verticalDirection = (Rope.Sign)playerMovement.FacingDirection.y;
-
-                fishingLine.AddSegmentToStart(horizontalDirection, verticalDirection);
-            }
-            else
-            {
-                fishingLine.RemoveSegmentFromStart();
-            }
-        }
     }
 
     protected void SampleCast(Vector2 casting)
@@ -433,7 +406,7 @@ public class PlayerFishing : MonoBehaviour
 
     protected void HandleReelingIn()
     {
-        if(reelOut < reelIn)
+        if (reelOut < reelIn)
         {
             return;
         }
@@ -448,7 +421,7 @@ public class PlayerFishing : MonoBehaviour
 
     protected void HandleReelingOut()
     {
-        if(reelIn < reelOut)
+        if (reelIn < reelOut)
         {
             return;
         }
