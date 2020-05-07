@@ -35,15 +35,11 @@ public class LureMovement : MonoBehaviour
         this.fallEndTime = Time.time + fallDuration;
         this.rigidBody.gravityScale = gravityScale;
         this.isFalling = true;
-
-        // Subscribe to tension
-        this.slackTension.TensionChanged += Move;
     }
 
     void OnDisable()
     {
-        // Unsubscribe from tension
-        this.slackTension.TensionChanged -= Move;
+       
     }
 
     void FixedUpdate()
@@ -96,11 +92,6 @@ public class LureMovement : MonoBehaviour
         }
 
         LureStoppedFalling(this, EventArgs.Empty);
-    }
-
-    protected void Move(object source, EventArgs args)
-    {
-
     }
     #endregion FixedUpdate
 }

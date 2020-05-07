@@ -18,6 +18,7 @@ public class PlayerFishing : MonoBehaviour
     protected float rodTipSpeed = 5;
     [SerializeField]
     protected Rigidbody2D lure;
+    protected LureMovement lureMovement;
     [SerializeField]
     protected FishingLine fishingLine;
     public SlackTension slackTension;
@@ -140,21 +141,45 @@ public class PlayerFishing : MonoBehaviour
     void Awake()
     {
         this.animator = GetComponent<Animator>();
-        this.controls = new PlayerControls();
 
+        this.controls = new PlayerControls();
         this.controls.Gameplay.ToggleItem.performed += ctx => ToggleFishing();
 
         this.playerMovement = GetComponent<PlayerMovement>();
+
+        this.lureMovement = lure.gameObject.GetComponent<LureMovement>();
     }
 
     void OnEnable()
     {
         this.controls.Gameplay.Enable();
+
+        if(slackTension == null)
+        {
+            return;
+        }
+
+        // Subscribe to tension
+        this.slackTension.TensionChanged += MoveLureTowardPlayer;
     }
 
     void OnDisable()
     {
         this.controls.Gameplay.Disable();
+
+        // Unsubscribe from tension
+        this.slackTension.TensionChanged -= MoveLureTowardPlayer;
+    }
+
+    public void MoveLureTowardPlayer(object source, EventArgs args)
+    {
+        Vector2 direction = transform.position - lure.transform.position;   // destination - origin
+        direction = direction.normalized;
+
+        float tension = slackTension.Tension;
+        Vector2 force = direction * tension;
+
+        lure.AddForce(force);
     }
 
     void Update()
@@ -392,7 +417,6 @@ public class PlayerFishing : MonoBehaviour
         lure.gameObject.SetActive(true);
 
         // Subscribe to lure falling
-        LureMovement lureMovement = lure.gameObject.GetComponent<LureMovement>();
         lureMovement.LureStoppedFalling += Angling;
 
         // Accelerate lure
