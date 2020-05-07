@@ -284,8 +284,6 @@ public class PlayerFishing : MonoBehaviour
             SampleCast(rodMovement);
 
             ReleaseCast(rodPositionX);
-
-            SpoolOutLine();
         }
         else
         {
