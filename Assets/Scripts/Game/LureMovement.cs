@@ -5,10 +5,10 @@ using UnityEngine;
 //[RequireComponent(typeof(Animator))]
 public class LureMovement : MonoBehaviour
 {
+    public SlackTension slackTension;
+
     [ReadOnlyInInspector]
-    public float gravityScale = 0.1f;
-    [SerializeField]
-    protected float fallSpeed = 1;
+    public float gravityScale = 1f;
     [SerializeField]
     protected float fallDuration = 1.5f;    // s
     [ReadOnlyInInspector]
@@ -16,8 +16,10 @@ public class LureMovement : MonoBehaviour
     [ReadOnlyInInspector]
     public bool isFalling = false;
 
-    public delegate void LureStoppedEventHandler(object source, EventArgs args);
-    public event LureStoppedEventHandler LureStopped;
+    public delegate void LureMovedEventHandler(object source, EventArgs args);
+    public event LureMovedEventHandler LureMoved;
+    public delegate void LureStoppedFallingEventHandler(object source, EventArgs args);
+    public event LureStoppedFallingEventHandler LureStoppedFalling;
 
     protected Rigidbody2D rigidBody;
 
@@ -33,15 +35,37 @@ public class LureMovement : MonoBehaviour
         this.fallEndTime = Time.time + fallDuration;
         this.rigidBody.gravityScale = gravityScale;
         this.isFalling = true;
+
+        // Subscribe to tension
+        this.slackTension.TensionChanged += Move;
+    }
+
+    void OnDisable()
+    {
+        // Unsubscribe from tension
+        this.slackTension.TensionChanged -= Move;
     }
 
     void FixedUpdate()
     {
-        if(isFalling != true)
+        Fall();
+
+        if(transform.hasChanged != true)
         {
             return;
         }
-        if(Time.time < fallEndTime)
+
+        OnLureMoved();
+    }
+
+    #region FixedUpdate
+    protected void Fall()
+    {
+        if (isFalling != true)
+        {
+            return;
+        }
+        if (Time.time < fallEndTime)
         {
             return;
         }
@@ -51,16 +75,32 @@ public class LureMovement : MonoBehaviour
         this.rigidBody.gravityScale = 0f;
         this.isFalling = false;
 
-        OnLureStopped();
+        OnLureStoppedFalling();
     }
 
-    protected virtual void OnLureStopped()
+    protected virtual void OnLureMoved()
     {
-        if(LureStopped == null)
+        if (LureMoved == null)
         {
             return;
         }
 
-        LureStopped(this, EventArgs.Empty);
+        LureMoved(this, EventArgs.Empty);
     }
+
+    protected virtual void OnLureStoppedFalling()
+    {
+        if(LureStoppedFalling == null)
+        {
+            return;
+        }
+
+        LureStoppedFalling(this, EventArgs.Empty);
+    }
+
+    protected void Move(object source, EventArgs args)
+    {
+
+    }
+    #endregion FixedUpdate
 }

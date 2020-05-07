@@ -13,13 +13,14 @@ public class PlayerFishing : MonoBehaviour
     public bool isFishing = false;
 
     [SerializeField]
-    protected Rigidbody2D rodTipRigidBody;
+    protected Rigidbody2D rodTip;
     [SerializeField]
     protected float rodTipSpeed = 5;
     [SerializeField]
-    protected Rigidbody2D lureRigidBody;
+    protected Rigidbody2D lure;
     [SerializeField]
-    protected Rope fishingLine;
+    protected FishingLine fishingLine;
+    public SlackTension slackTension;
 
     [ReadOnlyInInspector]
     public bool isHolding = false;
@@ -263,7 +264,7 @@ public class PlayerFishing : MonoBehaviour
         {
             float lineTension = 0;
 
-            float lineSlack = fishingLine.slack;
+            float lineSlack = slackTension.Slack;
             if (lineSlack < 0)
             {
                 lineTension = -lineSlack;
@@ -274,13 +275,13 @@ public class PlayerFishing : MonoBehaviour
 
             float deltaReel = reelIn + reelOut;
 
-            // Stop reel
+            // Stop reel velocity
             if (2 - deltaReel < threshold)
             {
                 this.currentReelRotationVelocity = 0;
             }
 
-            // Slow reel
+            // Slow reel velocity
             if(deltaReel < threshold)
             {
                 float deltaReelVelocity = Mathf.Clamp(reelDrag, reelDrag, -currentReelRotationVelocity);
@@ -295,7 +296,7 @@ public class PlayerFishing : MonoBehaviour
             float delta = Mathf.Clamp(currentReelRotationVelocity * Time.fixedDeltaTime, -lineOut, lineLength - lineOut);
             this.lineOut += delta;
 
-            this.fishingLine.UpdateSlack(delta);
+            this.slackTension.ChangeSlackTension(delta);
 
             //MoveRod();
 
@@ -386,21 +387,21 @@ public class PlayerFishing : MonoBehaviour
         animator.SetBool(Trigger.HAS_RELEASED_CAST, hasReleasedCast);
 
         // Set lure starting position
-        lureRigidBody.transform.position = rodTipRigidBody.position + castingRightLureOffset;
+        lure.transform.position = rodTip.position + castingRightLureOffset;
 
-        lureRigidBody.gameObject.SetActive(true);
+        lure.gameObject.SetActive(true);
+
+        // Subscribe to lure falling
+        LureMovement lureMovement = lure.gameObject.GetComponent<LureMovement>();
+        lureMovement.LureStoppedFalling += Angling;
 
         // Accelerate lure
         Vector2 castDirection = new Vector2(rodMovement.x * castingSpeed, rodMovement.y + 0.25f * castingSpeed);
         Vector2 lureVelocity = castDirection;
-        lureRigidBody.velocity = lureVelocity;
+        lure.velocity = lureVelocity;
 
-        LureMovement lureMovement = lureRigidBody.gameObject.GetComponent<LureMovement>();
-        lureMovement.LureStopped += Angling;
-
-        // Set fishing line starting position
-        fishingLine.slack = 0;
-        //fishingLine.UpdateControlPoint();
+        // Set fishing line slack
+        this.slackTension.SetSlackTension(0);
 
         fishingLine.gameObject.SetActive(true);
     }
@@ -419,6 +420,10 @@ public class PlayerFishing : MonoBehaviour
 
         this.isAngling = true;
         animator.SetBool(Trigger.IS_ANGLING, isAngling);
+
+        // Unsubscribe from lure falling
+        LureMovement lureMovement = lure.gameObject.GetComponent<LureMovement>();
+        lureMovement.LureStoppedFalling -= Angling;
     }
 
     protected void HandleReelingIn(float lineTension)
@@ -471,7 +476,7 @@ public class PlayerFishing : MonoBehaviour
         Vector2 acceleration = rodMovement * rodTipSpeed * Time.fixedDeltaTime;
         currentRodTipPosition += acceleration;
 
-        rodTipRigidBody.MovePosition(currentRodTipPosition);
+        rodTip.MovePosition(currentRodTipPosition);
 
         // TODO: add constraint of how far rod tip can move away from player
     }
