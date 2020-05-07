@@ -1,28 +1,25 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
-public class Rope : MonoBehaviour
+public class FishingLine : MonoBehaviour
 {
-    [ReadOnlyInInspector]
-    public float slack = 0;
+    public SlackTension slackTension;
 
     [SerializeField]
     protected Rigidbody2D rodTip;
     [SerializeField]
     protected Rigidbody2D lure;
+    //[SerializeField]
+    //protected Transform controlPoint;
     [SerializeField]
     protected float lineWidth = 0.1f;
     [SerializeField]
     protected int numPoints = 10;
     [SerializeField]
     protected float limitSlope = 10;
-    [SerializeField]
-    protected float maxStrain;
-
-    protected Vector2 controlPoint;
 
     protected LineRenderer lineRenderer;
-    protected readonly float quarterPi = 0.25f * Mathf.PI;
 
     void Awake()
     {
@@ -35,20 +32,43 @@ public class Rope : MonoBehaviour
         this.lineRenderer.endWidth = lineWidth;
 
         UpdateControlPoint();
+        Draw();
+
+        // Subscribe to slack
+        this.slackTension.SlackChanged += OnCurvatureChanged;
+
+        // Subscribe to lure movement
+        LureMovement lureMovement = lure.gameObject.GetComponent<LureMovement>();
+        lureMovement.LureMoved += OnLureMoved;
     }
 
-    public void UpdateSlack(float deltaSlack)
+    void OnDisable()
     {
-        this.slack += deltaSlack;
+        // Unsubscribe from slack
+        this.slackTension.SlackChanged -= OnCurvatureChanged;
 
+        // Unsubscribe from lure movement
+        LureMovement lureMovement = lure.gameObject.GetComponent<LureMovement>();
+        lureMovement.LureMoved -= OnLureMoved;
+    }
+
+    public void OnCurvatureChanged(object source, EventArgs args)
+    {
         UpdateControlPoint();
+        Draw();
     }
 
-    protected void UpdateControlPoint()
+    public void OnLureMoved(object source, EventArgs args)
     {
-        if(slack <= 0)
+        Draw();
+    }
+
+    public void UpdateControlPoint()
+    {
+        if(slackTension.Slack <= 0)
         {
-            this.controlPoint = Vector2.zero;
+            //this.controlPoint.position = Vector2.zero;
+            transform.position = Vector2.zero;
             return;
         }
 
@@ -74,17 +94,18 @@ public class Rope : MonoBehaviour
         float a = rodTip.position.x;
         float b = intersectPoint.y + limitSlope / (intersectPoint.x - a);
 
-        float controlY = intersectPoint.y - slack;
+        float controlY = intersectPoint.y - slackTension.Slack;
         float controlX = -limitSlope / (controlY - b) + a;
 
-        this.controlPoint = new Vector2(controlX, controlY);
+        //this.controlPoint.position = new Vector2(controlX, controlY);
+        transform.position = new Vector2(controlX, controlY);
     }
 
-    void Update()
-    {
-        //UpdateControlPoint();   //testing
-        Draw();
-    }
+    //void Update()
+    //{
+    //    //UpdateControlPoint();   //testing
+    //    Draw();
+    //}
 
     #region Update
     protected void Draw()
@@ -95,9 +116,10 @@ public class Rope : MonoBehaviour
             float t = i / (float)numPoints;
             Vector3 bezierPoint = CalculateLinearBezierPoint(t, rodTip.position, lure.position);
 
-            if (slack > 0)
+            if (slackTension.Slack > 0)
             {
-                bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, controlPoint, lure.position);
+                //bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, controlPoint.position, lure.position);
+                bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, transform.position, lure.position);
             }
 
             allPoints[i] = bezierPoint;
@@ -122,5 +144,5 @@ public class Rope : MonoBehaviour
         Vector3 bezierPoint = Mathf.Pow(u, 2)*p0 + 2*u*t*p1 + Mathf.Pow(t, 2)*p2;
         return bezierPoint;
     }
-    #endregion
+    #endregion Update
 }

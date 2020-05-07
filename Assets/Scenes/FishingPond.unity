@@ -235,8 +235,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2503ba0a96f4ef449b72474987cc324b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slackTension: {fileID: 11400000, guid: ea3e01e30acfd084b9a82b98242d2b8d, type: 2}
   gravityScale: 0.1
-  fallSpeed: 1
   fallDuration: 1
   fallEndTime: 0
   isFalling: 0
@@ -4073,13 +4073,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b0b448d1bc4d5e4583d3d88f4ba0bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slack: 1
+  slackTension: {fileID: 0}
   rodTip: {fileID: 1726442060}
   lure: {fileID: 1718027681}
   lineWidth: 0.1
   numPoints: 10
   limitSlope: 10
-  maxStrain: 0
 --- !u!120 &1726442062
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -4234,13 +4233,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b0b448d1bc4d5e4583d3d88f4ba0bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slack: 0
+  slackTension: {fileID: 11400000, guid: ea3e01e30acfd084b9a82b98242d2b8d, type: 2}
   rodTip: {fileID: 1869138612}
   lure: {fileID: 228700315}
   lineWidth: 0.05
   numPoints: 10
   limitSlope: 10
-  maxStrain: 0
 --- !u!120 &1772696577
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -4283,7 +4281,7 @@ LineRenderer:
   - {x: 2, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.1
+    widthMultiplier: 1
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -4488,10 +4486,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   threshold: 0.05
   isFishing: 0
-  rodTipRigidBody: {fileID: 1869138612}
+  rodTip: {fileID: 1869138612}
   rodTipSpeed: 5
-  lureRigidBody: {fileID: 228700315}
+  lure: {fileID: 228700315}
   fishingLine: {fileID: 1772696576}
+  slackTension: {fileID: 11400000, guid: ea3e01e30acfd084b9a82b98242d2b8d, type: 2}
   isHolding: 0
   rodSpeed: 0.05
   rodMovement: {x: 0, y: 0}
