@@ -154,7 +154,7 @@ public class PlayerFishing : MonoBehaviour
     {
         this.controls.Gameplay.Enable();
 
-        if(slackTension == null)
+        if (slackTension == null)
         {
             return;
         }
@@ -309,10 +309,10 @@ public class PlayerFishing : MonoBehaviour
             }
 
             // Slow reel velocity
-            if(deltaReel < threshold)
+            if (deltaReel < threshold)
             {
                 float deltaReelVelocity = Mathf.Clamp(reelDrag, reelDrag, -currentReelRotationVelocity);
-                if(currentReelRotationVelocity > 0)
+                if (currentReelRotationVelocity > 0)
                 {
                     deltaReelVelocity = Mathf.Clamp(-reelDrag, -currentReelRotationVelocity, -reelDrag);
                 }
@@ -434,6 +434,11 @@ public class PlayerFishing : MonoBehaviour
 
     protected void SpoolOutLine()
     {
+        if (hasReleasedCast != true)
+        {
+            return;
+        }
+
         float distance = Vector2.Distance(rodTip.position, lure.position);
         this.lineOut = distance;
     }
@@ -465,7 +470,7 @@ public class PlayerFishing : MonoBehaviour
         }
 
         //float reelRotationSpeed = currentReelRotationSpeed - previousReelRotationSpeed;
-        
+
         float reelInSpeed = (-reelIn + reelOut) * reelingSpeed - Mathf.Clamp(lineTension - reelingStrength, 0, lineTension);
         currentReelRotationVelocity += reelInSpeed;
 
