@@ -284,6 +284,8 @@ public class PlayerFishing : MonoBehaviour
             SampleCast(rodMovement);
 
             ReleaseCast(rodPositionX);
+
+            SpoolOutLine();
         }
         else
         {
@@ -430,6 +432,12 @@ public class PlayerFishing : MonoBehaviour
         fishingLine.gameObject.SetActive(true);
     }
 
+    protected void SpoolOutLine()
+    {
+        float distance = Vector2.Distance(rodTip.position, lure.position);
+        this.lineOut = distance;
+    }
+
     protected void SampleCast(Vector2 casting)
     {
         // TODO
@@ -446,8 +454,7 @@ public class PlayerFishing : MonoBehaviour
         animator.SetBool(Trigger.IS_ANGLING, isAngling);
 
         // Unsubscribe from lure falling
-        LureMovement lureMovement = lure.gameObject.GetComponent<LureMovement>();
-        lureMovement.LureStoppedFalling -= Angling;
+        this.lureMovement.LureStoppedFalling -= Angling;
     }
 
     protected void HandleReelingIn(float lineTension)
