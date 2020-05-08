@@ -428,6 +428,9 @@ public class PlayerFishing : MonoBehaviour
         this.slackTension.SetSlackTension(0);
 
         fishingLine.gameObject.SetActive(true);
+
+        // Subscribe to lure movement
+        lureMovement.LureMoved += fishingLine.OnLureMoved;
     }
 
     protected void SpoolOutLine()

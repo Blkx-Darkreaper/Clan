@@ -7,9 +7,9 @@ public class FishingLine : MonoBehaviour
     public SlackTension slackTension;
 
     [SerializeField]
-    protected Rigidbody2D rodTip;
+    protected Transform rodTip;
     [SerializeField]
-    protected Rigidbody2D lure;
+    protected Transform lureKnot;
     //[SerializeField]
     //protected Transform controlPoint;
     [SerializeField]
@@ -36,20 +36,12 @@ public class FishingLine : MonoBehaviour
 
         // Subscribe to slack
         this.slackTension.SlackChanged += OnCurvatureChanged;
-
-        // Subscribe to lure movement
-        LureMovement lureMovement = lure.gameObject.GetComponent<LureMovement>();
-        lureMovement.LureMoved += OnLureMoved;
     }
 
     void OnDisable()
     {
         // Unsubscribe from slack
         this.slackTension.SlackChanged -= OnCurvatureChanged;
-
-        // Unsubscribe from lure movement
-        LureMovement lureMovement = lure.gameObject.GetComponent<LureMovement>();
-        lureMovement.LureMoved -= OnLureMoved;
     }
 
     public void OnCurvatureChanged(object source, EventArgs args)
@@ -78,7 +70,7 @@ public class FishingLine : MonoBehaviour
         //    return;
         //}
 
-        Vector2 delta = lure.position - rodTip.position;
+        Vector2 delta = lureKnot.position - rodTip.position;
         float deltaX = Mathf.Abs(delta.x);
         float deltaY = Mathf.Abs(delta.y);
 
@@ -87,7 +79,7 @@ public class FishingLine : MonoBehaviour
 
         float d = Mathf.Cos(oppositeAngle) * quarterHypotenuse;
 
-        Vector2 cornerPoint = new Vector2(rodTip.position.x, lure.position.y);
+        Vector2 cornerPoint = new Vector2(rodTip.position.x, lureKnot.position.y);
         //Vector2 intersectPoint = new Vector2(rodTip.position.x + d, lure.position.y + d);
         Vector2 intersectPoint = new Vector2(cornerPoint.x + 0.25f * deltaX, cornerPoint.y + 0.75f * deltaY);
 
@@ -114,12 +106,12 @@ public class FishingLine : MonoBehaviour
         for (int i = 0; i < numPoints; i++)
         {
             float t = i / (float)numPoints;
-            Vector3 bezierPoint = CalculateLinearBezierPoint(t, rodTip.position, lure.position);
+            Vector3 bezierPoint = CalculateLinearBezierPoint(t, rodTip.position, lureKnot.position);
 
             if (slackTension.Slack > 0)
             {
                 //bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, controlPoint.position, lure.position);
-                bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, transform.position, lure.position);
+                bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, transform.position, lureKnot.position);
             }
 
             allPoints[i] = bezierPoint;
