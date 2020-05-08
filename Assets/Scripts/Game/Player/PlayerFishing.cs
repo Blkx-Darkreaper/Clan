@@ -24,7 +24,7 @@ public class PlayerFishing : MonoBehaviour
     public SlackTension slackTension;
 
     [ReadOnlyInInspector]
-    public bool isHolding = false;
+    public bool isReadyToCast = false;
 
     [SerializeField]
     protected float rodSpeed = 0.05f;
@@ -280,7 +280,8 @@ public class PlayerFishing : MonoBehaviour
 
             animator.SetFloat($"{ROD}{POSITION}{Direction.X}", rodPosition.x);
 
-            //FinishWindup(rodPositionX);
+            CheckIsReadyToCast(rodPositionX);
+
             SampleCast(rodMovement);
 
             ReleaseCast(rodPositionX);
@@ -364,13 +365,13 @@ public class PlayerFishing : MonoBehaviour
         return rodPositionX;
     }
 
-    protected void FinishWindup(float rodPositionX)
+    protected void CheckIsReadyToCast(float rodPositionX)
     {
         //if (isReleasingCast == true)
         //{
         //    return;
         //}
-        if (isHolding == true)
+        if (isReadyToCast == true)
         {
             return;
         }
@@ -381,8 +382,7 @@ public class PlayerFishing : MonoBehaviour
             return;
         }
 
-        this.isHolding = true;
-        animator.SetBool(Trigger.IS_HOLDING, isHolding);
+        this.isReadyToCast = true;
     }
 
     protected void ReleaseCast(float rodPositionX)
