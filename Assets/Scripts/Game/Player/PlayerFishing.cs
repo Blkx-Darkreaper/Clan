@@ -179,7 +179,13 @@ public class PlayerFishing : MonoBehaviour
         direction = direction.normalized;
 
         float tension = slackTension.Tension;
-        Vector2 force = direction * tension;
+
+        Vector2 force = Vector2.zero;
+
+        if (tension > threshold)
+        {
+            force = direction * tension;
+        }
 
         lure.AddForce(force);
     }
