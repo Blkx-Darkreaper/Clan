@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-//[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Animator))]
 public class LureMovement : MonoBehaviour
 {
     public SlackTension slackTension;
@@ -22,11 +22,12 @@ public class LureMovement : MonoBehaviour
     public event LureStoppedFallingEventHandler LureStoppedFalling;
 
     protected Rigidbody2D rigidBody;
+    protected Animator animator;
 
     void Awake()
     {
         this.rigidBody = GetComponent<Rigidbody2D>();
-        //this.animator = GetComponent<Animator>();
+        this.animator = GetComponent<Animator>();
         this.gravityScale = rigidBody.gravityScale;
     }
 

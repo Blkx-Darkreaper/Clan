@@ -18,6 +18,8 @@ public class PlayerFishing : MonoBehaviour
     protected float rodTipSpeed = 5;
     [SerializeField]
     protected Rigidbody2D lure;
+    [SerializeField]
+    protected Transform lureKnot;
     protected LureMovement lureMovement;
     [SerializeField]
     protected FishingLine fishingLine;
@@ -42,8 +44,6 @@ public class PlayerFishing : MonoBehaviour
     public LinkedList<Vector2> allCastingSamples;
     [SerializeField]
     protected float castingSpeed = 500f;
-    [SerializeField]
-    protected Vector2 castingRightLureOffset = new Vector2(0.4f, -0.1f);
 
     [ReadOnlyInInspector]
     public Vector2 currentRodTipPosition;
@@ -173,7 +173,7 @@ public class PlayerFishing : MonoBehaviour
 
     public void MoveLureTowardPlayer(object source, EventArgs args)
     {
-        Vector2 direction = transform.position - lure.transform.position;   // destination - origin
+        Vector2 direction = rodTip.position - (Vector2)lureKnot.position;   // destination - origin
         direction = direction.normalized;
 
         float tension = slackTension.Tension;
@@ -285,6 +285,8 @@ public class PlayerFishing : MonoBehaviour
             SampleCast(rodMovement);
 
             ReleaseCast(rodPositionX);
+
+            SpoolOutLine();
         }
         else
         {
@@ -412,7 +414,8 @@ public class PlayerFishing : MonoBehaviour
         animator.SetBool(Trigger.HAS_RELEASED_CAST, hasReleasedCast);
 
         // Set lure starting position
-        lure.transform.position = rodTip.position + castingRightLureOffset;
+        Vector2 lureOffset = lure.position - (Vector2)lureKnot.position;
+        lure.transform.position = rodTip.position + lureOffset;
 
         lure.gameObject.SetActive(true);
 
@@ -440,7 +443,7 @@ public class PlayerFishing : MonoBehaviour
             return;
         }
 
-        float distance = Vector2.Distance(rodTip.position, lure.position);
+        float distance = Vector2.Distance(rodTip.position, lureKnot.position);
         this.lineOut = distance;
     }
 
