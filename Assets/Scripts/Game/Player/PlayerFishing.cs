@@ -163,6 +163,7 @@ public class PlayerFishing : MonoBehaviour
 
         // Subscribe to tension
         this.slackTension.TensionChanged += MoveLureTowardPlayer;
+        this.slackTension.TensionChanged += UpdateLineOut;
     }
 
     void OnDisable()
@@ -171,6 +172,25 @@ public class PlayerFishing : MonoBehaviour
 
         // Unsubscribe from tension
         this.slackTension.TensionChanged -= MoveLureTowardPlayer;
+        this.slackTension.TensionChanged -= UpdateLineOut;
+    }
+
+    public void UpdateLineOut(object source, EventArgs args)
+    {
+        if(slackTension.Slack < threshold)
+        {
+            return;
+        }
+
+        float distance = Vector2.Distance(rodTip.position, lureKnot.position);
+
+        float diff = Mathf.Abs(distance - lineOut);
+        if(diff < threshold)
+        {
+            return;
+        }
+
+        this.lineOut = distance;
     }
 
     public void MoveLureTowardPlayer(object source, EventArgs args)
@@ -194,7 +214,6 @@ public class PlayerFishing : MonoBehaviour
         float tension = slackTension.Tension;
 
         Vector2 force = Vector2.zero;
-
         if (tension > threshold)
         {
             force = normalizedDirection * tension;
