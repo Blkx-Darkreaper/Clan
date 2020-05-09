@@ -67,6 +67,8 @@ public class PlayerFishing : MonoBehaviour
     [SerializeField]
     protected float reelingSpeed = 1;
     [SerializeField]
+    protected float maxReelRotationSpeed = 5;
+    [SerializeField]
     protected float reelDrag = 0.1f;
     [SerializeField]
     protected float reelingStrength = 1;
@@ -300,6 +302,8 @@ public class PlayerFishing : MonoBehaviour
 
             HandleReelingIn(lineTension);
             HandleReelingOut(lineTension);
+
+            currentReelRotationVelocity = Mathf.Clamp(currentReelRotationVelocity, -maxReelRotationSpeed, maxReelRotationSpeed);
 
             float deltaReel = reelIn + reelOut;
 
