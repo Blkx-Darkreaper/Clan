@@ -153,7 +153,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 2
-  m_LinearDrag: 0.2
+  m_LinearDrag: 0.02
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
@@ -4257,7 +4257,7 @@ MonoBehaviour:
   slackTension: {fileID: 11400000, guid: ea3e01e30acfd084b9a82b98242d2b8d, type: 2}
   rodTip: {fileID: 1869138611}
   lureKnot: {fileID: 1820069901}
-  lineWidth: 0.05
+  lineWidth: 0.06
   numPoints: 10
   limitSlope: 10
 --- !u!120 &1772696577
@@ -4561,6 +4561,7 @@ MonoBehaviour:
   lineOut: 0
   lineLength: 25
   reelingSpeed: 0.05
+  maxReelRotationSpeed: 5
   reelDrag: 0.1
   reelingStrength: 1
   hasBite: 0
