@@ -4540,6 +4540,7 @@ MonoBehaviour:
   rodTip: {fileID: 1869138612}
   rodTipSpeed: 5
   lure: {fileID: 228700315}
+  lureKnot: {fileID: 1820069901}
   fishingLine: {fileID: 1772696576}
   slackTension: {fileID: 11400000, guid: ea3e01e30acfd084b9a82b98242d2b8d, type: 2}
   isReadyToCast: 0
@@ -4550,7 +4551,6 @@ MonoBehaviour:
   isHoldingLine: 0
   hasReleasedCast: 0
   castingSpeed: 12
-  castingRightLureOffset: {x: 0.4, y: -0.1}
   currentRodTipPosition: {x: 0, y: 0}
   previousRodTipPosition: {x: 0, y: 0}
   isAngling: 0
