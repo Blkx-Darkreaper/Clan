@@ -176,7 +176,20 @@ public class PlayerFishing : MonoBehaviour
     public void MoveLureTowardPlayer(object source, EventArgs args)
     {
         Vector2 direction = rodTip.position - (Vector2)lureKnot.position;   // destination - origin
-        direction = direction.normalized;
+        float directionX = direction.x;
+        float directionY = direction.y;
+
+        Vector2 normalizedDirection = direction.normalized;
+
+        // Move lure horizontally until it's beneat the rod tip
+        float absDirX = Mathf.Abs(directionX);
+        if (absDirX > threshold)
+        {
+            // Normalize x direction
+            normalizedDirection.x = directionX / Mathf.Abs(directionX);
+
+            normalizedDirection.y = 0;
+        }
 
         float tension = slackTension.Tension;
 
@@ -184,7 +197,7 @@ public class PlayerFishing : MonoBehaviour
 
         if (tension > threshold)
         {
-            force = direction * tension;
+            force = normalizedDirection * tension;
         }
 
         lure.AddForce(force);
