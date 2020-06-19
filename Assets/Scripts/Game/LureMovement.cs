@@ -15,6 +15,9 @@ public class LureMovement : MonoBehaviour
     public float fallEndTime;    // s
     [ReadOnlyInInspector]
     public bool isFalling = false;
+    protected Vector2 previousPosition;
+    public Vector2 CurrentPosition { get { return (Vector2)transform.position; } }
+    public Vector2 PreviousPosition { get { return previousPosition; } }
 
     public delegate void LureMovedEventHandler(object source, EventArgs args);
     public event LureMovedEventHandler LureMoved;
@@ -36,22 +39,24 @@ public class LureMovement : MonoBehaviour
         this.fallEndTime = Time.time + fallDuration;
         this.rigidBody.gravityScale = gravityScale;
         this.isFalling = true;
+        this.previousPosition = CurrentPosition;
     }
 
     void OnDisable()
     {
-       
+
     }
 
     void FixedUpdate()
     {
         Fall();
 
-        if(transform.hasChanged != true)
+        if (transform.hasChanged != true)
         {
             return;
         }
 
+        previousPosition = CurrentPosition;
         OnLureMoved();
     }
 
@@ -87,7 +92,7 @@ public class LureMovement : MonoBehaviour
 
     protected virtual void OnLureStoppedFalling()
     {
-        if(LureStoppedFalling == null)
+        if (LureStoppedFalling == null)
         {
             return;
         }

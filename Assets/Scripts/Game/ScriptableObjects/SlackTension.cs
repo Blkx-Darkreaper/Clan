@@ -5,8 +5,8 @@ using UnityEngine;
 public class SlackTension : ScriptableObject
 {
     public float Slack { get { return slack; } }
-    public float DeltaSlack { get { return slackChange; } protected set { this.slackChange = value; } }
-    public delegate void SlackChangedEventHandler(object source, EventArgs args);
+    public float DeltaSlack { get { return slackChange; } }
+    public delegate void SlackChangedEventHandler(object source, EventDataArg<float> args);
     public event SlackChangedEventHandler SlackChanged;
 
     [ReadOnlyInInspector]
@@ -16,8 +16,8 @@ public class SlackTension : ScriptableObject
     protected float slackChange = 0;
 
     public float Tension { get { return tension; } }
-    public float DeltaTension { get { return tensionChange; } protected set { this.tensionChange = value; } }
-    public delegate void TensionChangedEventHandler(object source, EventArgs args);
+    public float DeltaTension { get { return tensionChange; } }
+    public delegate void TensionChangedEventHandler(object source, EventDataArg<float> args);
     public event TensionChangedEventHandler TensionChanged;
 
     [ReadOnlyInInspector]
@@ -47,8 +47,8 @@ public class SlackTension : ScriptableObject
         }
 
         this.slack += change;
-        this.DeltaSlack = change;
-        OnSlackChanged();
+        this.slackChange = change;
+        OnSlackChanged(change);
 
         float previousTension = tension;
         if (slack < 0)
@@ -65,27 +65,27 @@ public class SlackTension : ScriptableObject
             return;
         }
 
-        this.DeltaTension = tensionDiff;
-        OnTensionChanged();
+        this.tensionChange = tensionDiff;
+        OnTensionChanged(tensionDiff);
     }
 
-    protected virtual void OnSlackChanged()
+    protected virtual void OnSlackChanged(float deltaSlack)
     {
         if (SlackChanged == null)
         {
             return;
         }
 
-        SlackChanged(this, EventArgs.Empty);
+        SlackChanged(this, new EventDataArg<float>(deltaSlack));
     }
 
-    protected virtual void OnTensionChanged()
+    protected virtual void OnTensionChanged(float deltaTension)
     {
         if(TensionChanged == null)
         {
             return;
         }
 
-        TensionChanged(this, EventArgs.Empty);
+        TensionChanged(this, new EventDataArg<float>(deltaTension));
     }
 }
