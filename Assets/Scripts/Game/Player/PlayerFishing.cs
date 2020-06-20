@@ -19,6 +19,8 @@ public class PlayerFishing : MonoBehaviour
     [SerializeField]
     protected float rodTipSpeed = 5;
     [SerializeField]
+    protected float rodTipHeight;
+    [SerializeField]
     protected Rigidbody2D lure;
     [SerializeField]
     protected Transform lureKnot;
@@ -578,10 +580,11 @@ public class PlayerFishing : MonoBehaviour
 
         // Move lure horizontally until it's beneath the rod tip
         float absDirX = Mathf.Abs(directionX);
-        if (absDirX > threshold)
+        //if (absDirX > threshold)
+        if (lineOut > rodTipHeight)
         {
             // Normalize x direction
-            normalizedDirection.x = directionX / Mathf.Abs(directionX);
+            normalizedDirection.x = directionX / absDirX;
 
             normalizedDirection.y = 0;
         }
