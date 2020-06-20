@@ -237,7 +237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2503ba0a96f4ef449b72474987cc324b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slackTension: {fileID: 11400000, guid: ea3e01e30acfd084b9a82b98242d2b8d, type: 2}
+  height: 0
   gravityScale: 0.1
   fallDuration: 1
   fallEndTime: 0
@@ -4094,7 +4094,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b0b448d1bc4d5e4583d3d88f4ba0bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slackTension: {fileID: 0}
   rodTip: {fileID: 1726442060}
   lureKnot: {fileID: 0}
   lineWidth: 0.1
@@ -4254,7 +4253,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b0b448d1bc4d5e4583d3d88f4ba0bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slackTension: {fileID: 11400000, guid: ea3e01e30acfd084b9a82b98242d2b8d, type: 2}
   rodTip: {fileID: 1869138611}
   lureKnot: {fileID: 1820069901}
   lineWidth: 0.06
@@ -4539,10 +4537,10 @@ MonoBehaviour:
   isFishing: 0
   rodTip: {fileID: 1869138612}
   rodTipSpeed: 5
+  rodTipHeight: 1.15
   lure: {fileID: 228700315}
   lureKnot: {fileID: 1820069901}
   fishingLine: {fileID: 1772696576}
-  slackTension: {fileID: 11400000, guid: ea3e01e30acfd084b9a82b98242d2b8d, type: 2}
   isReadyToCast: 0
   rodSpeed: 0.05
   rodMovement: {x: 0, y: 0}
@@ -4554,12 +4552,13 @@ MonoBehaviour:
   currentRodTipPosition: {x: 0, y: 0}
   previousRodTipPosition: {x: 0, y: 0}
   isAngling: 0
-  currentReelRotationVelocity: 0
-  previousReelRotationSpeed: 0
   reelIn: 0
   reelOut: 0
+  currentReelRotationVelocity: 0
+  slack: 0
   lineOut: 0
   lineLength: 25
+  lineOutResetThreshold: 0.45
   reelingSpeed: 0.05
   maxReelRotationSpeed: 5
   reelDrag: 0.1
