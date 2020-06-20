@@ -68,6 +68,8 @@ public class PlayerFishing : MonoBehaviour
     [SerializeField]
     protected float lineLength = 25;
     [SerializeField]
+    protected float lineOutResetThreshold = 0.45f;
+    [SerializeField]
     protected float reelingSpeed = 1;
     [SerializeField]
     protected float maxReelRotationSpeed = 5;
@@ -306,6 +308,10 @@ public class PlayerFishing : MonoBehaviour
         {
             return;
         }
+        if(isAngling == true)
+        {
+            return;
+        }
 
         isFishing = !isFishing;
         animator.SetBool(Trigger.IS_FISHING, isFishing);
@@ -398,8 +404,7 @@ public class PlayerFishing : MonoBehaviour
 
             //MoveRod();
 
-            //float lineChange = currentReelRotationSpeed * Time.fixedDeltaTime;
-            //lineOut = Mathf.Clamp(lineOut + lineChange, 0, lineLength);
+            ResetFishing();
         }
     }
 
@@ -480,6 +485,7 @@ public class PlayerFishing : MonoBehaviour
             return;
         }
 
+        this.isReadyToCast = false;
         this.hasReleasedCast = true;
         animator.SetBool(Trigger.HAS_RELEASED_CAST, hasReleasedCast);
 
@@ -550,7 +556,7 @@ public class PlayerFishing : MonoBehaviour
         currentReelRotationVelocity += reelOutSpeed;
     }
 
-    public void MoveLureTowardPlayer(float lineTension)
+    protected virtual void MoveLureTowardPlayer(float lineTension)
     {
         if (lureMovement.isFalling == true)
         {
@@ -584,6 +590,22 @@ public class PlayerFishing : MonoBehaviour
         lure.AddForce(force);
 
         //lure.MovePosition(endPosition);
+    }
+
+    protected virtual void ResetFishing()
+    {
+        if(lineOut > lineOutResetThreshold)
+        {
+            return;
+        }
+
+        isAngling = false;
+        animator.SetBool(Trigger.IS_ANGLING, isAngling);
+
+        animator.SetTrigger(Trigger.ALL_REELED_IN);
+
+        lure.gameObject.SetActive(false);
+        fishingLine.gameObject.SetActive(false);
     }
 
     protected void HandleTension()
