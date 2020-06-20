@@ -5,8 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class LureMovement : MonoBehaviour
 {
-    public SlackTension slackTension;
-
+    [ReadOnlyInInspector]
+    public float height;
     [ReadOnlyInInspector]
     public float gravityScale = 1f;
     [SerializeField]
@@ -49,7 +49,7 @@ public class LureMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        Fall();
+        StopFalling();
 
         if (transform.hasChanged != true)
         {
@@ -57,11 +57,11 @@ public class LureMovement : MonoBehaviour
         }
 
         previousPosition = CurrentPosition;
-        OnLureMoved();
+        MoveLure();
     }
 
     #region FixedUpdate
-    protected void Fall()
+    protected void StopFalling()
     {
         if (isFalling != true)
         {
@@ -77,10 +77,10 @@ public class LureMovement : MonoBehaviour
         this.rigidBody.gravityScale = 0f;
         this.isFalling = false;
 
-        OnLureStoppedFalling();
+        StopLureFalling();
     }
 
-    protected virtual void OnLureMoved()
+    protected virtual void MoveLure()
     {
         if (LureMoved == null)
         {
@@ -90,7 +90,7 @@ public class LureMovement : MonoBehaviour
         LureMoved(this, EventArgs.Empty);
     }
 
-    protected virtual void OnLureStoppedFalling()
+    protected virtual void StopLureFalling()
     {
         if (LureStoppedFalling == null)
         {

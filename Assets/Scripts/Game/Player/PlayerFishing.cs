@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Animator))]
 public class PlayerFishing : MonoBehaviour
 {
+    public static PlayerFishing singleton = null;
+
     [SerializeField]
     protected float threshold = 0.05f;
 
@@ -23,7 +25,6 @@ public class PlayerFishing : MonoBehaviour
     protected LureMovement lureMovement;
     [SerializeField]
     protected FishingLine fishingLine;
-    public SlackTension slackTension;
 
     [ReadOnlyInInspector]
     public bool isReadyToCast = false;
@@ -60,6 +61,8 @@ public class PlayerFishing : MonoBehaviour
     public float currentReelRotationVelocity = 0;  // + out, - in
     [ReadOnlyInInspector]
     public float slack;
+    public delegate void SlackUpdatedEventHandler(object source, EventArgs args);
+    public event SlackUpdatedEventHandler SlackUpdated;
     [ReadOnlyInInspector]
     public float lineOut;
     [SerializeField]
@@ -142,6 +145,17 @@ public class PlayerFishing : MonoBehaviour
 
     void Awake()
     {
+        if (singleton == null)
+        {
+            singleton = this;
+        }
+
+        if (this != singleton)
+        {
+            Destroy(this);
+            return;
+        }
+
         this.animator = GetComponent<Animator>();
 
         this.controls = new PlayerControls();
@@ -156,67 +170,78 @@ public class PlayerFishing : MonoBehaviour
     {
         this.controls.Gameplay.Enable();
 
-        if (slackTension == null)
-        {
-            return;
-        }
-
-        // Subscribe to tension
-        this.slackTension.TensionChanged += UpdateLineOut;
-
         // Subscribe to Lure movement
-        this.lureMovement.LureMoved += ReduceTension;
+        this.lureMovement.LureMoved += OnLineOutUpdated;
     }
 
     void OnDisable()
     {
         this.controls.Gameplay.Disable();
 
-        // Unsubscribe from tension
-        this.slackTension.TensionChanged -= UpdateLineOut;
-
         // Unsubscribe to Lure movement
-        this.lureMovement.LureMoved -= ReduceTension;
+        this.lureMovement.LureMoved -= OnLineOutUpdated;
     }
 
-    public void UpdateLineOut(object source, EventDataArg<float> arg)
+    public void OnLineOutUpdated(object source, EventArgs arg)
     {
-        if(slackTension.Slack < threshold)
-        {
-            return;
-        }
+        //if(slack < threshold)
+        //{
+        //    return;
+        //}
 
         float distance = Vector2.Distance(rodTip.position, lureKnot.position);
+        float updatedLineOut = distance + slack;
 
-        float diff = Mathf.Abs(distance - lineOut);
-        if(diff < threshold)
+        float diff = Mathf.Abs(updatedLineOut - lineOut);
+        if (diff < threshold)
         {
             return;
         }
 
-        this.lineOut = distance;
+        this.lineOut = updatedLineOut;
     }
 
-    public void ReduceTension(object source, EventArgs args)
+    public void OnLureMoved(object source, EventArgs args)
     {
-        Vector2 currentPosition = lureMovement.CurrentPosition;
-        Vector2 previousPosition = lureMovement.PreviousPosition;
+        UpdateSlack(0);
+    }
 
-        Vector2 direction = currentPosition - previousPosition;
-        direction = direction.normalized;
-
-        Vector2 playerDirection = (Vector2)transform.position - previousPosition;
-        playerDirection = playerDirection.normalized;
-
-        float dotProduct = Vector2.Dot(direction, playerDirection);
-        float diff = 1f - dotProduct;
-        if (diff > threshold)
+    public void OnAngling(object source, EventArgs args)
+    {
+        if (isAngling == true)
         {
             return;
         }
 
-        float distanceMoved = Vector2.Distance(currentPosition, previousPosition);
-        this.slackTension.ChangeSlackTension(distanceMoved);
+        this.isAngling = true;
+        animator.SetBool(Trigger.IS_ANGLING, isAngling);
+
+        // Unsubscribe from lure falling
+        this.lureMovement.LureStoppedFalling -= OnAngling;
+    }
+
+    protected virtual void UpdateSlack(float delta)
+    {
+        float updatedSlack = slack + delta;
+
+        float distance = Vector2.Distance(rodTip.position, lureKnot.position);
+        float maxSlack = lineLength - distance;
+
+        updatedSlack = Mathf.Clamp(updatedSlack, 0, maxSlack);
+
+        SetSlack(updatedSlack);
+    }
+
+    protected virtual void SetSlack(float updatedSlack)
+    {
+        this.slack = updatedSlack;
+
+        if (SlackUpdated == null)
+        {
+            return;
+        }
+
+        SlackUpdated(this, EventArgs.Empty);
     }
 
     void Update()
@@ -242,8 +267,6 @@ public class PlayerFishing : MonoBehaviour
         //StartCasingWithStick();
 
         //CastLureWithStick();
-
-        this.slack = slackTension.Slack;    //testing
 
         if (isAngling != true)
         {
@@ -331,17 +354,10 @@ public class PlayerFishing : MonoBehaviour
         {
             float lineTension = 0;
 
-            float lineSlack = slackTension.Slack;
-            if (lineSlack < 0)
-            {
-                lineTension = -lineSlack;
-                lineSlack = 0;
-            }
-
             HandleReelingIn(lineTension);
             HandleReelingOut(lineTension);
 
-            currentReelRotationVelocity = Mathf.Clamp(currentReelRotationVelocity, -maxReelRotationSpeed, maxReelRotationSpeed);
+            this.currentReelRotationVelocity = Mathf.Clamp(currentReelRotationVelocity, -maxReelRotationSpeed, maxReelRotationSpeed);
 
             float deltaReel = reelIn + reelOut;
 
@@ -367,13 +383,17 @@ public class PlayerFishing : MonoBehaviour
                 this.currentReelRotationVelocity += deltaReelVelocity;
             }
 
-            currentReelRotationVelocity = Mathf.Clamp(currentReelRotationVelocity, -maxReelRotationSpeed, maxReelRotationSpeed);
+            this.currentReelRotationVelocity = Mathf.Clamp(currentReelRotationVelocity, -maxReelRotationSpeed, maxReelRotationSpeed);
 
             float delta = Mathf.Clamp(currentReelRotationVelocity * Time.fixedDeltaTime, -lineOut, lineLength - lineOut);
             this.lineOut += delta;
 
-            this.slackTension.ChangeSlackTension(delta);
+            UpdateSlack(delta);
 
+            if (currentReelRotationVelocity < 0)
+            {
+                lineTension = -currentReelRotationVelocity;
+            }
             MoveLureTowardPlayer(lineTension);
 
             //MoveRod();
@@ -439,6 +459,10 @@ public class PlayerFishing : MonoBehaviour
 
     protected void ReleaseCast(float rodPositionX)
     {
+        if (hasReleasedCast == true)
+        {
+            return;
+        }
         if (rodVelocity < threshold)
         {
             return;
@@ -455,10 +479,6 @@ public class PlayerFishing : MonoBehaviour
         {
             return;
         }
-        if (hasReleasedCast == true)
-        {
-            return;
-        }
 
         this.hasReleasedCast = true;
         animator.SetBool(Trigger.HAS_RELEASED_CAST, hasReleasedCast);
@@ -470,7 +490,7 @@ public class PlayerFishing : MonoBehaviour
         lure.gameObject.SetActive(true);
 
         // Subscribe to lure falling
-        lureMovement.LureStoppedFalling += Angling;
+        lureMovement.LureStoppedFalling += OnAngling;
 
         // Accelerate lure
         Vector2 castDirection = new Vector2(rodMovement.x * castingSpeed, rodMovement.y + 0.25f * castingSpeed);
@@ -478,12 +498,12 @@ public class PlayerFishing : MonoBehaviour
         lure.velocity = lureVelocity;
 
         // Set fishing line slack
-        this.slackTension.SetSlackTension(0);
+        SetSlack(0);
 
         fishingLine.gameObject.SetActive(true);
 
         // Subscribe to lure movement
-        lureMovement.LureMoved += fishingLine.OnLureMoved;
+        lureMovement.LureMoved += OnLureMoved;
     }
 
     protected void SpoolOutLine()
@@ -493,29 +513,17 @@ public class PlayerFishing : MonoBehaviour
             return;
         }
 
-        float distance = Vector2.Distance(rodTip.position, lureKnot.position);
-        this.lineOut = distance;
-
         this.currentReelRotationVelocity = maxReelRotationSpeed;
+
+        float distance = Vector2.Distance(rodTip.position, lureKnot.position);
+        distance = Mathf.Clamp(distance, 0, lineLength);
+
+        this.lineOut = distance;
     }
 
     protected void SampleCast(Vector2 casting)
     {
         // TODO
-    }
-
-    public void Angling(object source, EventArgs args)
-    {
-        if (isAngling == true)
-        {
-            return;
-        }
-
-        this.isAngling = true;
-        animator.SetBool(Trigger.IS_ANGLING, isAngling);
-
-        // Unsubscribe from lure falling
-        this.lureMovement.LureStoppedFalling -= Angling;
     }
 
     protected void HandleReelingIn(float lineTension)
@@ -544,8 +552,15 @@ public class PlayerFishing : MonoBehaviour
 
     public void MoveLureTowardPlayer(float lineTension)
     {
-        if(lureMovement.isFalling == true)
+        if (lureMovement.isFalling == true)
         {
+            return;
+        }
+
+        Vector2 force = Vector2.zero;
+        if (lineTension < threshold)
+        {
+            lure.AddForce(force);
             return;
         }
 
@@ -555,7 +570,7 @@ public class PlayerFishing : MonoBehaviour
 
         Vector2 normalizedDirection = direction.normalized;
 
-        // Move lure horizontally until it's beneat the rod tip
+        // Move lure horizontally until it's beneath the rod tip
         float absDirX = Mathf.Abs(directionX);
         if (absDirX > threshold)
         {
@@ -565,13 +580,10 @@ public class PlayerFishing : MonoBehaviour
             normalizedDirection.y = 0;
         }
 
-        Vector2 force = Vector2.zero;
-        if (lineTension > threshold)
-        {
-            force = normalizedDirection * lineTension;
-        }
-
+        force = normalizedDirection * lineTension;
         lure.AddForce(force);
+
+        //lure.MovePosition(endPosition);
     }
 
     protected void HandleTension()

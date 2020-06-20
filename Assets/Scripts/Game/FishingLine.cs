@@ -4,8 +4,6 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class FishingLine : MonoBehaviour
 {
-    public SlackTension slackTension;
-
     [SerializeField]
     protected Transform rodTip;
     [SerializeField]
@@ -31,33 +29,30 @@ public class FishingLine : MonoBehaviour
         this.lineRenderer.startWidth = lineWidth;
         this.lineRenderer.endWidth = lineWidth;
 
-        UpdateControlPoint();
-        Draw();
+        UpdateControlPoint(0);
+        Draw(0);
 
         // Subscribe to slack
-        this.slackTension.SlackChanged += OnCurvatureChanged;
+        PlayerFishing.singleton.SlackUpdated += OnCurvatureChanged;
     }
 
     void OnDisable()
     {
         // Unsubscribe from slack
-        this.slackTension.SlackChanged -= OnCurvatureChanged;
+        PlayerFishing.singleton.SlackUpdated -= OnCurvatureChanged;
     }
 
     public void OnCurvatureChanged(object source, EventArgs args)
     {
-        UpdateControlPoint();
-        Draw();
+        float slack = PlayerFishing.singleton.slack;
+
+        UpdateControlPoint(slack);
+        Draw(slack);
     }
 
-    public void OnLureMoved(object source, EventArgs args)
+    public void UpdateControlPoint(float slack)
     {
-        Draw();
-    }
-
-    public void UpdateControlPoint()
-    {
-        if(slackTension.Slack <= 0)
+        if(slack <= 0)
         {
             //this.controlPoint.position = Vector2.zero;
             transform.position = Vector2.zero;
@@ -86,7 +81,7 @@ public class FishingLine : MonoBehaviour
         float a = rodTip.position.x;
         float b = intersectPoint.y + limitSlope / (intersectPoint.x - a);
 
-        float controlY = intersectPoint.y - slackTension.Slack;
+        float controlY = intersectPoint.y - slack;
         float controlX = -limitSlope / (controlY - b) + a;
 
         //this.controlPoint.position = new Vector2(controlX, controlY);
@@ -100,7 +95,7 @@ public class FishingLine : MonoBehaviour
     //}
 
     #region Update
-    protected void Draw()
+    protected void Draw(float slack)
     {
         Vector3[] allPoints = new Vector3[numPoints];
         for (int i = 0; i < numPoints; i++)
@@ -108,7 +103,7 @@ public class FishingLine : MonoBehaviour
             float t = i / (float)numPoints;
             Vector3 bezierPoint = CalculateLinearBezierPoint(t, rodTip.position, lureKnot.position);
 
-            if (slackTension.Slack > 0)
+            if (slack > 0)
             {
                 //bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, controlPoint.position, lure.position);
                 bezierPoint = CalculateQuadraticBezierPoint(t, rodTip.position, transform.position, lureKnot.position);
