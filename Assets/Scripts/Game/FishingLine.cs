@@ -100,7 +100,7 @@ public class FishingLine : MonoBehaviour
         Vector3[] allPoints = new Vector3[numPoints];
         for (int i = 0; i < numPoints; i++)
         {
-            float t = i / (float)numPoints;
+            float t = i / (float)(numPoints - 1);
             Vector3 bezierPoint = CalculateLinearBezierPoint(t, rodTip.position, lureKnot.position);
 
             if (slack > 0)
