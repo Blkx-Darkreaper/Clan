@@ -602,8 +602,11 @@ public class PlayerFishing : MonoBehaviour
             return;
         }
 
-        isAngling = false;
+        this.isAngling = false;
         animator.SetBool(Trigger.IS_ANGLING, isAngling);
+
+        this.hasReleasedCast = false;
+        animator.SetBool(Trigger.HAS_RELEASED_CAST, hasReleasedCast);
 
         animator.SetTrigger(Trigger.ALL_REELED_IN);
 
